@@ -34,20 +34,6 @@ local remaining_time = sbar.add("item", {
   },
 })
 
-local current_percentage = sbar.add("item", {
-  position = "popup." .. battery.name,
-  icon = {
-    string = "Charge:",
-    width = 100,
-    align = "left"
-  },
-  label = {
-    string = "??%",
-    width = 100,
-    align = "right"
-  },
-})
-
 battery:subscribe({"routine", "power_source_change", "system_woke"}, function()
   sbar.exec("pmset -g batt", function(batt_info)
     local icon = "!"
@@ -59,7 +45,7 @@ battery:subscribe({"routine", "power_source_change", "system_woke"}, function()
       label = charge .. "%"
     end
 
-    local color = colors.green
+    local color = colors.pastel.green2
     local charging, _, _ = batt_info:find("AC Power")
 
     if charging then
@@ -95,6 +81,21 @@ battery:subscribe({"routine", "power_source_change", "system_woke"}, function()
   end)
 end)
 
+battery:subscribe("mouse.entered", function(env)
+  sbar.exec("pmset -g batt", function(batt_info)
+    local charge_found, _, charge = batt_info:find("(%d+)%%")
+    if charge_found then
+      charge = tonumber(charge)
+      charge_label = charge .. "%"
+    end
+    battery:set({ label = { drawing = "toggle", string = charge_label } })
+  end)
+end)
+
+battery:subscribe("mouse.exited", function(env)
+  battery:set({ label = { drawing = false } })
+end)
+
 battery:subscribe("mouse.clicked", function(env)
   local drawing = battery:query().popup.drawing
   battery:set( { popup = { drawing = "toggle" } })
@@ -102,13 +103,7 @@ battery:subscribe("mouse.clicked", function(env)
   if drawing == "off" then
     sbar.exec("pmset -g batt", function(batt_info)
       local found, _, remaining = batt_info:find(" (%d+:%d+) remaining")
-      local charge_found, _, charge = batt_info:find("(%d+)%%")
-        if charge_found then
-          charge = tonumber(charge)
-          charge_label = charge .. "%"
-        end
       local label = found and remaining .. "h" or "No estimate"
-      current_percentage:set( { label = charge_label })
       remaining_time:set( { label = label })
     end)
   end

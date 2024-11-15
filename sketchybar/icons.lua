@@ -40,6 +40,9 @@ local icons = {
       forward = "􀊌",
       play_pause = "􀊈",
     },
+    focus = {
+      on = "􀆺"
+    }
   },
 
   -- Alternative NerdFont icons
