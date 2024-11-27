@@ -4,6 +4,8 @@ local settings = require("settings")
 
 local focus = sbar.add("item", "widgets.focus", {
   position = "right",
+  -- update_freq = 1,
+  -- script = "$CONFIG_DIR/helpers/focus_mode.sh",
   drawing = false,
   icon = {
     string = icons.focus.on,
@@ -19,14 +21,10 @@ local focus = sbar.add("item", "widgets.focus", {
   padding_left = 1
 })
 
--- focus:subscribe("donotdisturbd", function(env)
---   focus:set({ label = { drawing = "toggle", string = "XXX" } })
+-- focus:subscribe("mouse.clicked", function(env)
+--     focus:set({ label = { drawing = "toggle", string = "XXX" } })
+--     sbar.exec("shortcuts run 'toggle focus'")    
 -- end)
-
-focus:subscribe("mouse.clicked", function(env)
-    focus:set({ label = { drawing = "toggle", string = "XXX" } })
-    sbar.exec("shortcuts run 'toggle focus'")    
-end)
 
 sbar.add("bracket", "widgets.focus.bracket", { focus.name }, {
   background = { color = colors.bg1 }
